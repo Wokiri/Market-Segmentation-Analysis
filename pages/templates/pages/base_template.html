@@ -1,0 +1,43 @@
+{% load static %}
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="shortcut icon" href="{% static 'pages/pics/favicon.ico' %}" type="image/x-icon">
+    
+    {% block title %}
+        {% if page_name %}
+            <title>{{ page_name }} | Market Segmentation</title>
+        {% else %}
+            <title>Market Segmentation</title>
+        {% endif %}
+        <style>
+            th {
+                color: #008000;
+                text-align: center;
+            }
+        </style>
+    {% endblock %}
+
+    {% block docmeta %}
+    {% endblock %}
+
+    
+    <link rel="stylesheet" type="text/css" href="{% static 'pages/css/bootstrap.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'pages/css/market_segmentation.css' %}">
+</head>
+<body class="">
+
+    <div class="fluid-container">
+        {% include 'pages/navigation_bar.html' %}
+    </div>
+    {% block content %}{% endblock %}
+    <script src="{% static 'pages/js/bootstrap.js' %}"></script>
+</body>
+
+
+</html>

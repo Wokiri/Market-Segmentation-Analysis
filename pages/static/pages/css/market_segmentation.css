@@ -1,0 +1,58 @@
+@charset "UTF-8";
+@font-face {
+  font-family: 'BarlowSemiCondensedLight';
+  src: url("../fonts/BarlowSemiCondensed-Light.woff2") format("woff2"), url("../fonts/BarlowSemiCondensed-Light.woff") format("woff");
+  font-weight: 300;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'BarlowSemiCondensedRegular';
+  src: url("../fonts/BarlowSemiCondensed-Regular.woff2") format("woff2"), url("../fonts/BarlowSemiCondensed-Regular.woff") format("woff");
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'BarlowSemiCondensedSemibold';
+  src: url("../fonts/BarlowSemiCondensed-SemiBold.woff2") format("woff2"), url("../fonts/BarlowSemiCondensed-SemiBold.woff") format("woff");
+  font-weight: 600;
+  font-style: normal;
+  font-display: swap;
+}
+
+* {
+  scroll-behavior: smooth;
+  box-sizing: border-box;
+}
+
+body {
+  background-image: url("../pics/bg.jpg");
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+  background-size: cover;
+  background-position: center;
+  background-clip: padding-box;
+}
+
+.text-error {
+  color: red;
+}
+
+.light-Aqua-BG {
+  background-color: #efffff;
+}
+
+.text-barlow-light {
+  font-family: BarlowSemiCondensedLight;
+}
+
+.text-barlow-regular {
+  font-family: BarlowSemiCondensedRegular;
+}
+
+.text-barlow-semibold {
+  font-family: BarlowSemiCondensedSemibold;
+}
