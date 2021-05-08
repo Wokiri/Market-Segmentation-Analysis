@@ -45,14 +45,14 @@ body {
   background-color: #efffff;
 }
 
-.text-barlow-light {
+.font-barlow-light {
   font-family: BarlowSemiCondensedLight;
 }
 
-.text-barlow-regular {
+.font-barlow-regular {
   font-family: BarlowSemiCondensedRegular;
 }
 
-.text-barlow-semibold {
+.font-barlow-semibold {
   font-family: BarlowSemiCondensedSemibold;
 }

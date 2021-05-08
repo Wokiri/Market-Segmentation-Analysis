@@ -1,0 +1,36 @@
+{% extends 'pages/base_template.html' %} {% load static %} {% load humanize %}
+{% block content %}
+
+<div class="container-fluid shadow-lg rounded-lg p-5 bg-white" style="min-height:100vh;opacity:0.85;">
+    <div class="py-2 py-sm-4">
+      <h3 class="text-center text-success">Upload File</h3>
+    </div>
+  
+    <div class="row my-sm-2 p-sm-4">
+  
+      <div class="col-md-5 pt-4 d-flex justify-content-center border border-success rounded-lg">
+        {% if excel_name %}
+        <p class="text-info lead mb-3">
+            <p class="text-primary lead mb-3">Currently Reading <span class="fs-4 fw-bold text-success">{{ excel_name }}</span></p>
+        </p>
+        {% else %}
+            <p class="text-warning lead mb-3">No Files Uploaded yet.</p>
+        {% endif %}
+      </div>
+  
+      <div class="col-md-7 p-4 rounded-lg">
+  
+        <form enctype="multipart/form-data" method="post">
+          {% csrf_token %} {% for form in excel_form %}
+          <p class="text-danger">{{ form.errors }}</p>
+          <p>{{ form.label_tag }}</p>
+          <p>{{ form }}</p>
+          {% endfor %}
+          <button class="btn btn-info" type="submit">Upload</button>
+        </form>
+      </div>
+  
+    </div>
+  </div>
+
+{% endblock %}
