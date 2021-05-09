@@ -39,3 +39,12 @@ class Sale(models.Model):
         self.total_sales = self.product_a + self.product_b + self.product_c
         super().save(*args, **kwargs)
 
+
+
+class Ward(models.Model):
+    county = models.CharField(max_length=25)
+    sub_county = models.CharField(max_length=25)
+    ward = models.CharField(max_length=25)
+    geom = models.MultiPolygonField(srid=4326)
+
+    def __str__(self): return self.ward

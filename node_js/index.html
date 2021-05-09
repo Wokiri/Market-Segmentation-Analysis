@@ -6,7 +6,56 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><%= htmlWebpackPlugin.options.title %></title>
 </head>
-<body>
+<body class="text-white">
+
+    <div class="fluid-container">
+        <nav class="navbar navbar-expand-lg navbar-dark" style="background-color: #5f2e13;">
+            <div class="container-fluid font-barlow-semibold">
+              <span class="navbar-brand">Market Segmentation</span>
+              <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarScroll" aria-controls="navbarScroll" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+              </button>
+              <div class="collapse navbar-collapse" id="navbarScroll">
+                <ul class="navbar-nav me-auto my-2 my-lg-0 navbar-nav-scroll" style="--bs-scroll-height: 100px;">
+                  <li class="nav-item">
+                    <a class="nav-link" href="{% url 'pages:home_page' %}">Home</a>
+                  </li>
+                  <li class="nav-item">
+                    <a class="nav-link" href="{% url 'pages:upload_file_page' %}">Upload</a>
+                  </li>
+                  <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="navbarScrollingDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                      Link
+                    </a>
+                    <ul class="dropdown-menu" aria-labelledby="navbarScrollingDropdown">
+                      <li><a class="dropdown-item" href="#">Action</a></li>
+                      <li><a class="dropdown-item" href="#">Another action</a></li>
+                      <li><hr class="dropdown-divider"></li>
+                      <li><a class="dropdown-item" href="#">Something else here</a></li>
+                    </ul>
+                  </li>
+                </ul>
+                <form class="d-flex">
+                  <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
+                  <button class="btn btn-light" type="submit">Search</button>
+                </form>
+              </div>
+            </div>
+          </nav>
+    </div>
+
+    <div class="fluid-container lead bg-dark" style="min-height:100vh;opacity:0.85;"">
+        <div class="border border-info p-0 m-0 text-dark fw-bold" style="background-color: #fff;">
+            <p class="text-center m-0 p-2">Market Segmentation Analysis</p>
+            <div id="mkt_map" class="mx-auto m-0"></div>  
+        </div>
+        
+        <div id="mkt_popup" class="mkt_popup d-flex justify-content-center p-0 m-0">
+            <p id="mkt_popupcloser" class="mkt_popup_closer fw-bold"></p>
+            <div id="mkt_PopupContent"></div>
+        </div>
+    </div>
+
 </body>
 </html>
 

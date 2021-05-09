@@ -2,11 +2,13 @@ from django.shortcuts import render
 from django.conf import settings
 from django.contrib.gis.geos import MultiPoint, Point
 from django.contrib  import messages
+from django.core.serializers import serialize
 
 from data.models import (
     Sale,
     Customer,
     Excel,
+    Ward,
 )
 
 from data.forms import (
@@ -28,12 +30,28 @@ def home_page_view(request):
         'page_name': 'Home',
     }
 
+    if Sale.objects.count() > 0 and Customer.objects.count() > 0 and Ward.objects.count() > 0:
 
-    if Sale.objects.count() > 0 and Customer.objects.count() > 0:
+        customers_geojson = serialize(
+            'geojson',
+            Customer.objects.filter(customer_name__lte=2000),
+            # Customer.objects.all(),
+            # srid=3857,
+            fields = ('customer_name', 'pk', 'geom')
+        )
+
+        market_wards_geojson = serialize(
+            'geojson',
+            Ward.objects.all(),
+        )
+        
+        
         context = {
             'page_name': 'Home Page',
+            'customers_geojson': customers_geojson,
+            'market_wards_geojson': market_wards_geojson,
         }
-
+        
     return render(request, template_name, context)
 
 
@@ -65,8 +83,8 @@ def uploadExcel_view(request):
 
         excel_DF = theExcelDataFrame()['excel_df']
 
-        dropped_excel_DF = excel_DF.loc[excel_DF['Product A'] < 0].to_html()
-        excel_DF = excel_DF.loc[excel_DF['Product A'] >= 0]
+        dropped_excel_DF = excel_DF.loc[excel_DF['Product A'] < 0].loc[excel_DF['Longitude'] == 0].to_html()
+        excel_DF = excel_DF.loc[excel_DF['Product A'] >= 0].loc[excel_DF['Longitude'] != 0]
 
         def df_row_values(num:int):
             return list(excel_DF.iloc[num].values)
@@ -83,6 +101,7 @@ def uploadExcel_view(request):
                     'geom': MultiPoint(Point(row_vals[6], row_vals[5], srid=4326))
                 }
             )
+
             
             new_sale, created = Sale.objects.update_or_create(
                 customer = new_customer,

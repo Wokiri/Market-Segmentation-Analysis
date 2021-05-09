@@ -1,0 +1,1 @@
+import '../scss/market_segmentation.scss'

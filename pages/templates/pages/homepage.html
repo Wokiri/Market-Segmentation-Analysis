@@ -2,12 +2,28 @@
 {% load static %}
 {% load humanize %}
 
-{% block docmeta %} {% endblock %}
+{% block docmeta %}
+<link rel="stylesheet" type="text/css" href="{% static 'pages/css/mkt_analysis_map.css' %}">
+{% endblock %}
 
 {% block content %}
 
-<div class="container-fluid p-5">
-    
+<div class="border border-info p-0 m-0 text-dark fw-bold" style="background-color: #fff;">
+    <p class="text-center m-0 p-2">Market Segmentation Analysis</p>
+    <div id="mkt_map" class="mx-auto m-0"></div>  
 </div>
+
+<div id="mkt_popup" class="mkt_popup d-flex justify-content-center p-0 m-0">
+    <p id="mkt_popupcloser" class="mkt_popup_closer fw-bold"></p>
+    <div id="mkt_PopupContent"></div>
+</div>
+
+
+<script>
+    const market_wards_geojson = '{{ market_wards_geojson|escapejs }}'
+    const customers_geojson = '{{ customers_geojson|escapejs }}'
+</script>
+<script src="{% static 'pages/js/mkt_analysis_map.js' %}"></script>
+
 
 {% endblock %}
