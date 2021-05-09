@@ -18,23 +18,87 @@ from data.forms import (
 
 from pathlib import Path, PurePath
 import pandas
-import csv, io, json
+# import csv, io, json
 
 
 
 # Create your views here.
 def home_page_view(request):
-    template_name = 'pages/homepage.html'
+    template_name = 'pages/home_page.html'
+
+    sales_df = None
+    customers_df = None
+    wards_df = 4
+
+    if Sale.objects.count() > 0 and Customer.objects.count() > 0 and Ward.objects.count() > 0:
+
+        ward_customer_list = []
+
+        for ward in Ward.objects.all():
+            custs = Customer.objects.filter(customer_name__lte=500).filter(geom__intersects=ward.geom)#.values_list('customer_name')
+            if custs:
+                custs_list = []
+                for i, obj in enumerate(list(custs)):
+                    custs_list.append(obj.customer_name)
+                ward_customer_data = {str(ward.ward):custs_list}
+                ward_customer_list.append(ward_customer_data)
+
+
+        print(ward_customer_list)
+        # wards_df = pandas.DataFrame().to_html(
+        #     justify='center', show_dimensions=True, classes=[
+        #         'table table-dark table-striped table-sm table-bordered font-barlow-light align-middle'
+        #     ]
+        # )
+
+        sales_df = pandas.DataFrame(Sale.objects.values())
+        customers_df = pandas.DataFrame(Customer.objects.values('id', 'customer_name')).rename(
+            columns={
+                'id':'Customer Id',
+                'customer_name':'Customer Name',
+            }
+        )
+
+        sales_df_head = sales_df.rename(
+            columns={
+                'id':'Sale Id',
+                'date':'Sale Date',
+                'product_a': 'Product A',
+                'product_b': 'Product B',
+                'product_c': 'Product C',
+                'customer_id': 'Customer Id',
+                'total_sales': 'Total Sales',
+            }
+        ).merge(customers_df, left_on='Customer Id', right_on='Customer Id').set_index('Sale Id').head().to_html(
+            justify='center', show_dimensions=True, classes=[
+                'table table-dark table-striped table-sm table-bordered font-barlow-light align-middle'
+            ]
+        )
 
     context = {
-        'page_name': 'Home',
+        'page_name': 'Home Page',
+        'sales_df': sales_df,
+        'customers_df': customers_df,
+        'sales_df_head': sales_df_head,
+        'wards_df': wards_df,
+    }
+
+    return render(request, template_name, context)
+
+
+
+def map_page_view(request):
+    template_name = 'pages/map_page.html'
+
+    context = {
+        'page_name': 'Map',
     }
 
     if Sale.objects.count() > 0 and Customer.objects.count() > 0 and Ward.objects.count() > 0:
 
         customers_geojson = serialize(
             'geojson',
-            Customer.objects.filter(customer_name__lte=2000),
+            Customer.objects.filter(customer_name__lte=15000),
             # Customer.objects.all(),
             # srid=3857,
             fields = ('customer_name', 'pk', 'geom')
@@ -47,7 +111,7 @@ def home_page_view(request):
         
         
         context = {
-            'page_name': 'Home Page',
+            'page_name': 'Map Page',
             'customers_geojson': customers_geojson,
             'market_wards_geojson': market_wards_geojson,
         }

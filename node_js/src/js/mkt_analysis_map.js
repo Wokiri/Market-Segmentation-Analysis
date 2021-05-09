@@ -50,7 +50,7 @@ const CustomerTextStyle = feature => {
 const CustomerPointStyle = feature => {
   return new Style({
     image: new CircleStyle({
-      radius: 4,
+      radius: 2.5,
       fill: new Fill({ color: 'rgb(255, 255, 255)' }),
       //   stroke: new Stroke({ color: 'rgb(255, 255, 255)', width: 4 }),
       text: CustomerTextStyle(feature),
@@ -79,7 +79,7 @@ const WardTextStyle = feature =>
   new Text({
     textAlign: 'center',
     textBaseline: 'middle',
-    font: `16px Helvetica, sans-serif`,
+    font: `14px Helvetica, sans-serif`,
     text: WardTextLabel(feature),
     placement: 'polygon',
     fill: new Fill({
@@ -95,7 +95,7 @@ const WardPolygonStyle = feature => {
     }),
     stroke: new Stroke({
       color: '#99ccff',
-      width: 1.5,
+      width: 0.75,
     }),
     text: WardTextStyle(feature),
   })

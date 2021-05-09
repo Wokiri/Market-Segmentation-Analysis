@@ -8,6 +8,8 @@
 
 {% block content %}
 
+{% if market_wards_geojson and customers_geojson %}
+
 <div class="border border-info p-0 m-0 text-dark fw-bold" style="background-color: #fff;">
     <p class="text-center m-0 p-2">Market Segmentation Analysis</p>
     <div id="mkt_map" class="mx-auto m-0"></div>  
@@ -17,6 +19,15 @@
     <p id="mkt_popupcloser" class="mkt_popup_closer fw-bold"></p>
     <div id="mkt_PopupContent"></div>
 </div>
+
+{% else %}
+
+<div class="border border-info p-0 m-0 text-dark fw-bold" style="background-color: #fff;">
+    <p class="text-center m-0 p-2">Kindly Load Data</p>
+    <div id="mkt_map" class="mx-auto m-0"></div>  
+</div>
+
+{% endif %}
 
 
 <script>

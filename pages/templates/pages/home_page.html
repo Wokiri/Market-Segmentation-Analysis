@@ -1,0 +1,28 @@
+{% extends 'pages/base_template.html' %}
+{% load static %}
+{% load humanize %}
+
+{% block content %}
+
+{% if sales_df is not None and customers_df is not None and wards_df is not None %}
+
+<div class="table-responsive p-3">
+    <p class="text-info text-center">Dataframe Head of Sales Records Per Customer</p>
+    {{ sales_df_head|safe }}
+</div>
+
+<div class="table-responsive p-3">
+    <p class="text-info text-center">Wards</p>
+    {{ wards_df|safe }}
+</div>
+
+
+{% else %}
+
+<div class="border border-info p-0 m-0 text-dark fw-bold" style="background-color: #fff;">
+    <p class="text-center m-0 p-2">Kindly Load Excel Data</p>
+</div>
+
+{% endif %}
+
+{% endblock %}
