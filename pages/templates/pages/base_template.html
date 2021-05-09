@@ -30,12 +30,17 @@
     <link rel="stylesheet" type="text/css" href="{% static 'pages/css/bootstrap.css' %}">
     <link rel="stylesheet" type="text/css" href="{% static 'pages/css/market_segmentation.css' %}">
 </head>
-<body class="font-barlow-regular">
+<body class="font-barlow-regular text-white">
 
     <div class="fluid-container">
         {% include 'pages/navigation_bar.html' %}
     </div>
-    {% block content %}{% endblock %}
+    <div class="fluid-container bg-dark" style="min-height:100vh;opacity:0.85;"">
+        {% block content %}{% endblock %}
+    </div>
+
+    
+    
     <script src="{% static 'pages/js/bootstrap.js' %}"></script>
 </body>
 

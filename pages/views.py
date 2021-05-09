@@ -1,6 +1,7 @@
 from django.shortcuts import render
 from django.conf import settings
-from django.contrib.gis.geos import Point
+from django.contrib.gis.geos import MultiPoint, Point
+from django.contrib  import messages
 
 from data.models import (
     Sale,
@@ -13,7 +14,6 @@ from data.forms import (
 )
 
 
-
 from pathlib import Path, PurePath
 import pandas
 import csv, io, json
@@ -23,10 +23,17 @@ import csv, io, json
 # Create your views here.
 def home_page_view(request):
     template_name = 'pages/homepage.html'
-    
+
     context = {
         'page_name': 'Home',
     }
+
+
+    if Sale.objects.count() > 0 and Customer.objects.count() > 0:
+        context = {
+            'page_name': 'Home Page',
+        }
+
     return render(request, template_name, context)
 
 
@@ -37,11 +44,7 @@ def theExcelDataFrame():
         if Path(file_name).exists:
             return {
                 'file_name': excel_file.file,
-                'excel_df': pandas.read_excel(
-                    file_name,
-                    sheet_name='Nairobi',
-                    index_col="CustomerName"
-                    )
+                'excel_df': pandas.read_excel(file_name)
             }
 
     
@@ -50,50 +53,56 @@ def uploadExcel_view(request):
     template_name = 'pages/upload_file.html'
     excel_form = ExcellModelForm(request.POST or None, request.FILES or None)
 
-    excel_DF = theExcelDataFrame()
-
-    if excel_form.is_valid():
-        excel_form.save()
-        # uploaded_file = request.FILES['file']
-        # excel_name = uploaded_file.name
-
-        # Decode the excel
-        # excel_data = uploaded_file.read().decode('UTF-8')
-
-        # #Set up stream
-        # io_string = io.StringIO(excel_data)
-
-        # # Skip the header row
-        # next(io_string)
-
-        # for col in csv.reader(io_string, delimiter=','):
-
-        #     new_sale, created = Sale.objects.update_or_create(
-        #         customer_name = col[0],
-        #         defaults = {
-        #             'date': col[4],
-        #             'product_a': col[1],
-        #             'product_b': col[2],
-        #             'product_c': col[3],
-        #         }
-        #     )
-
-        #     new_customer, created = Customer.objects.update_or_create(
-        #         customer_name = col[0],
-        #         defaults = {
-        #             'customer_name': col[0],
-        #             'latitude': col[5],
-        #             'longitude': col[6],
-        #             'geom': Point(col[6], col[5], srid=4326)
-        #         }
-        #     )
-
-
-
     context = {
         'page_name': 'Upload File',
         'excel_form' : excel_form,
-        'excel_name' : excel_DF['file_name'],
-        # 'excel_df' : excel_DF['excel_df'].to_html(),
     }
+
+    dropped_excel_DF = None
+
+    if request.method == 'POST' and excel_form.is_valid():
+        excel_form.save()
+
+        excel_DF = theExcelDataFrame()['excel_df']
+
+        dropped_excel_DF = excel_DF.loc[excel_DF['Product A'] < 0].to_html()
+        excel_DF = excel_DF.loc[excel_DF['Product A'] >= 0]
+
+        def df_row_values(num:int):
+            return list(excel_DF.iloc[num].values)
+
+        for i in range(len(excel_DF)):
+            row_vals = df_row_values(i)
+
+            new_customer, created = Customer.objects.update_or_create(
+                customer_name = row_vals[0],
+                defaults = {
+                    'customer_name': row_vals[0],
+                    'longitude': row_vals[6],
+                    'latitude': row_vals[5],
+                    'geom': MultiPoint(Point(row_vals[6], row_vals[5], srid=4326))
+                }
+            )
+            
+            new_sale, created = Sale.objects.update_or_create(
+                customer = new_customer,
+                defaults = {
+                    'date': row_vals[4],
+                    'product_a': row_vals[1],
+                    'product_b': row_vals[2],
+                    'product_c': row_vals[3],
+                }
+            )
+
+        messages.success(request, f'Created/Updated {Customer.objects.count()} Customer Records!')
+        messages.success(request, f'Created/Updated {Sale.objects.count()} Sale Records!')
+
+    if theExcelDataFrame() is not None:
+        context = {
+            'page_name': 'Upload File',
+            'excel_form' : excel_form,
+            'excel_name' : theExcelDataFrame()['file_name'],
+            'dropped_excel_DF': dropped_excel_DF,
+        }
+        
     return render(request, template_name, context)

@@ -1,17 +1,29 @@
 {% extends 'pages/base_template.html' %} {% load static %} {% load humanize %}
 {% block content %}
 
-<div class="container-fluid shadow-lg rounded-lg p-5 bg-white" style="min-height:100vh;opacity:0.85;">
+<div class="container-fluid p-5">
+
+
+  {% if messages %}
+      <div class="container py-4 alert-info">
+          {% for message in messages %}
+              <h4{% if message.tags %} class="text-{{ message.tags }}"{% endif %}>{{ message|safe }}</h4>
+          {% endfor %}
+      </div>
+
+  {% endif %}
+
+  
     <div class="py-2 py-sm-4">
-      <h3 class="text-center text-success">Upload File</h3>
+      <h3 class="text-center text-info">Upload File</h3>
     </div>
   
     <div class="row my-sm-2 p-sm-4">
   
-      <div class="col-md-5 pt-4 d-flex justify-content-center border border-success rounded-lg">
+      <div class="col-md-5 pt-4 d-flex justify-content-center border border-info shadow-lg rounded-lg">
         {% if excel_name %}
         <p class="text-info lead mb-3">
-            <p class="text-primary lead mb-3">Currently Reading <span class="fs-4 fw-bold text-success">{{ excel_name }}</span></p>
+            <p class="lead mb-3">Currently Reading <span class="fs-4 fw-bold text-info">{{ excel_name }}</span></p>
         </p>
         {% else %}
             <p class="text-warning lead mb-3">No Files Uploaded yet.</p>
@@ -31,6 +43,7 @@
       </div>
   
     </div>
+    
   </div>
 
 {% endblock %}
