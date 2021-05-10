@@ -44,6 +44,13 @@
       </div>
   
     </div>
+
+    {% if dropped_excel_DF is not None %}
+
+    <p class="lead mb-3">The Following rows have been droped due to faulty entries</p>
+    {{ dropped_excel_DF|safe }}
+
+    {% endif %}
     
   </div>
 

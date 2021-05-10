@@ -139,12 +139,9 @@ def home_page_view(request):
     template_name = 'pages/home_page.html'
 
 
-    sales_df = None
-    customers_df = None
-    ward_customer_list = None
-    wards = None
-    sales_df_head = None
-    
+    context = {
+        'page_name': 'Home Page',
+    }
 
 
     if Sale.objects.count() > 0 and Customer.objects.count() > 0 and Ward.objects.count() > 0:
@@ -223,18 +220,18 @@ def home_page_view(request):
             ]
         )
 
-    context = {
-        'page_name': 'Home Page',
-        'sales_df': sales_df,
-        'customers_df': customers_df,
-        'sales_df_head': sales_df_head,
-        'ward_customer_list': ward_customer_list,
-        'county_script': county_geog['script'],
-        'county_div': county_geog['div'],
-        'sub_county_script': sub_county_geog['script'],
-        'sub_county_div': sub_county_geog['div'],
-        'num_wards': len(wards),
-    }
+        context = {
+            'page_name': 'Home Page',
+            'sales_df': sales_df,
+            'customers_df': customers_df,
+            'sales_df_head': sales_df_head,
+            'ward_customer_list': ward_customer_list,
+            'county_script': county_geog['script'],
+            'county_div': county_geog['div'],
+            'sub_county_script': sub_county_geog['script'],
+            'sub_county_div': sub_county_geog['div'],
+            'num_wards': len(wards),
+        }
 
     return render(request, template_name, context)
 
@@ -276,19 +273,16 @@ def theExcelDataFrame(nrows):
     if excel_file is not None:
         file_name = PurePath(settings.MEDIA_ROOT, str(excel_file.file))
         if Path(file_name).exists:
-            return {
-                'file_name': excel_file.file,
-                'excel_df': pandas.read_excel(
+            return pandas.read_excel(
                     file_name,
                     nrows=nrows
                 )
-            }
     
 
 def uploadExcel_view(request):
     template_name = 'pages/upload_file.html'
     excel_form = ExcellModelForm(request.POST or None, request.FILES or None)
-    num_records_form = NumberOfRecordForm(request.GET or None)
+    num_records_form = NumberOfRecordForm(request.POST or None)
 
     context = {
         'page_name': 'Upload File',
@@ -297,17 +291,19 @@ def uploadExcel_view(request):
     }
 
     dropped_excel_DF = None
-    excel_results = None
 
-    if request.method == 'POST' and excel_form.is_valid() and num_records_form.is_valid() and 'n_rows' in request.GET:
+    if 'n_rows' in request.POST and excel_form.is_valid() and num_records_form.is_valid():
         excel_form.save()
 
-        n_rows = num_records_form['n_rows']
-        excel_results = theExcelDataFrame(n_rows)
+        n_rows = num_records_form.cleaned_data['n_rows']
+        excel_DF = theExcelDataFrame(n_rows)
+        
 
-        excel_DF = excel_results['excel_df']
-
-        dropped_excel_DF = excel_DF.loc[excel_DF['Product A'] < 0].loc[excel_DF['Longitude'] == 0].to_html()
+        dropped_excel_DF = excel_DF.loc[excel_DF['Product A'] < 0].loc[excel_DF['Longitude'] == 0].to_html(
+            justify='center', show_dimensions=True, classes=[
+                'table table-warning table-striped table-sm table-bordered font-barlow-light align-middle'
+            ]
+        )
         excel_DF = excel_DF.loc[excel_DF['Product A'] >= 0].loc[excel_DF['Longitude'] != 0]
 
         def df_row_values(num:int):
@@ -325,7 +321,6 @@ def uploadExcel_view(request):
                     'geom': MultiPoint(Point(row_vals[6], row_vals[5], srid=4326))
                 }
             )
-
             
             new_sale, created = Sale.objects.update_or_create(
                 customer = new_customer,
@@ -340,12 +335,12 @@ def uploadExcel_view(request):
         messages.success(request, f'Created/Updated {Customer.objects.count()} Customer Records!')
         messages.success(request, f'Created/Updated {Sale.objects.count()} Sale Records!')
 
-    if excel_results is not None:
+    if Excel.objects.all():
         context = {
             'page_name': 'Upload File',
             'excel_form' : excel_form,
             'num_records_form' : num_records_form,
-            'excel_name' : excel_results['file_name'],
+            'excel_name' : Excel.objects.order_by('created').last().file,
             'dropped_excel_DF': dropped_excel_DF,
         }
         
