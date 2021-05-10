@@ -6,30 +6,26 @@
 
 {% if sales_df is not None and customers_df is not None %}
 
-<div class="table-responsive p-3">
-    <p class="text-center">Dataframe Head of Sales Records Per Customer</p>
-    {{ sales_df_head|safe }}
-</div>
-
 
 {% if ward_customer_list %}
-<div class="table-responsive p-3" style="max-height: 50vh;">
-    <p class="text-center">Table of Wards sorted by Number of Customers</p>
+<div class="table-responsive p-3" style="max-height: 90vh;">
+    <p class="text-center fs-4">Wards with at least a Customer</p>
+    <p class="text-center fs-6">List is sorted by the Number of Customers</p>
     <table class="table table-dark table-striped table-sm table-bordered font-barlow-light align-middle">
         <thead>
             <tr style="text-align: center;">
-              <th>Ward</th>
               <th>SubCounty</th>
               <th>County</th>
+              <th>Ward</th>
               <th>Number of Clients</th>
             </tr>
         </thead>
         <tbody>
             {% for ward in ward_customer_list|dictsortreversed:'Number_Clients' %}
             <tr>
-              <th>{{ ward.Ward }}</th>
               <td>{{ ward.SubCounty }}</td>
               <td>{{ ward.County }}</td>
+              <th class="pl-5 fs-5"><a class="nav-link" href="{% url 'pages:ward_detail_page' ward.WardUrl %}">{{ ward.Ward }}</a></th>
               <td class="text-center fs-4">{{ ward.Number_Clients }}</td>
             </tr>
             {% endfor %}
@@ -42,7 +38,7 @@
 {% else %}
 
 <div class="border border-info p-0 m-0 text-dark fw-bold" style="background-color: #fff;">
-    <p class="text-center m-0 p-2">Kindly Load Excel Data</p>
+    <p class="text-center m-0 p-2">Kindly Load Excel and/or Wards Data</p>
 </div>
 
 {% endif %}

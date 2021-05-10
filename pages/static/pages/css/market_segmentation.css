@@ -58,11 +58,10 @@ body {
   font-family: BarlowSemiCondensedSemibold;
 }
 
-#mkt_map {
+#mkt_map, #ward_detail_map {
   margin: 0;
   width: 100%;
   height: 600px;
-  min-height: 100vh;
   background-color: #000;
 }
 

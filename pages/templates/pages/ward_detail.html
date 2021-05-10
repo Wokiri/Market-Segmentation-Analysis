@@ -1,4 +1,8 @@
 {% extends 'pages/base_template.html' %} {% load static %} {% load humanize %}
+
+{% block docmeta %}
+<link rel="stylesheet" type="text/css" href="{% static 'pages/css/ward_detail_map.css' %}">
+{% endblock %}
 {% block content %}
 
 {% if ward %}
@@ -31,6 +35,23 @@
         </tbody>
     </table>
 </div>
+
+<div class="d-flex justify-content-center">
+  <div class="border border-info text-dark" style="width:98%;">
+    <div id="ward_detail_map" class="mx-auto"></div>  
+  </div>
+</div>
+
+
+
+
+
+<script>
+  const ward_geojson = '{{ ward_geojson|escapejs }}'
+  const ward_customers_geojson = '{{ ward_customers_geojson|escapejs }}'
+  const OpenStreetMap_Opacity = 0.85
+</script>
+<script src="{% static 'pages/js/ward_detail_map.js' %}"></script>
 {% endif %}
 
 {% endblock %}

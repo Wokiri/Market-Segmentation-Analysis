@@ -7,27 +7,10 @@ import { Map, View } from 'ol'
 import Select from 'ol/interaction/Select'
 import Overlay from 'ol/Overlay'
 import sync from 'ol-hashed'
-import {
-  Attribution,
-  defaults as defaultControls,
-  ZoomSlider,
-} from 'ol/control'
-import TileLayer from "ol/layer/Tile";
-import XYZ from "ol/source/XYZ";
+import ZoomSlider from 'ol/control/ZoomSlider';
 
 // const customers_geojson = require('./customers.json')
 // const market_wards_geojson = require('./market_wards.json')
-
-const OpenStreetMapLayer = new TileLayer({
-  title: "OpenStreetMap",
-  type: "base",
-  opacity: OpenStreetMap_Opacity,
-
-  source: new XYZ({
-    attributions: "Open Street map ",
-    url: "https://tile.openstreetmap.org/{z}/{x}/{y}.png",
-  }),
-});
 
 
 const mkt_div = document.getElementById('mkt_map')
@@ -44,21 +27,6 @@ const CustomerVector = new VectorSource({
   }),
 })
 
-// Customer visual style
-const CustomerTextLabel = feature => `${feature.get('customer_name')}`
-
-const CustomerTextStyle = feature => {
-  return new Text({
-    textAlign: 'center',
-    textBaseline: 'middle',
-    font: `18px Helvetica, sans-serif`,
-    text: CustomerTextLabel(feature),
-    placement: 'polygon',
-    fill: new Fill({
-      color: 'rgb(0, 0, 0)',
-    }),
-  })
-}
 
 // Styling Customer
 const CustomerPointStyle = feature => {
@@ -67,7 +35,7 @@ const CustomerPointStyle = feature => {
       radius: 2.5,
       fill: new Fill({ color: 'rgb(255, 255, 255)' }),
       //   stroke: new Stroke({ color: 'rgb(255, 255, 255)', width: 4 }),
-      text: CustomerTextStyle(feature),
+      // text: CustomerTextStyle(feature),
     }),
   })
 }
@@ -135,17 +103,9 @@ mkt_popupcloser.onclick = () => {
   return false
 }
 
-let expandedAttribution = new Attribution({
-  collapsible: false,
-})
-
 const mkt_map = new Map({
-  controls: defaultControls({ attribution: false }).extend([
-    expandedAttribution,
-    new ZoomSlider(),
-  ]),
   target: mkt_div,
-  layers: [OpenStreetMapLayer, WardLayer, CustomerLayer],
+  layers: [WardLayer, CustomerLayer],
   overlays: [theOverlay],
   view: new View({
     maxZoom: 28,
@@ -153,18 +113,13 @@ const mkt_map = new Map({
   }),
 })
 
+mkt_map.addControl(new ZoomSlider());
+
 sync(mkt_map)
 
 const mapExtent = WardLayer.getSource().getExtent()
 mkt_map.getView().fit(mapExtent, mkt_map.getSize())
 
-let checkSize = () => {
-  let isLess600 = mkt_map.getSize()[0] < 600
-  expandedAttribution.setCollapsible(isLess600)
-  expandedAttribution.setCollapsed(isLess600)
-}
-checkSize()
-window.addEventListener('resize', checkSize)
 
 // If Ward is selected get feature info, don't otherwise
 const populate_PopupContent = theFeature => {
@@ -202,17 +157,3 @@ mkt_map.on('singleclick', evt => {
     mkt_popupcloser.blur()
   }
 })
-
-let attributionComplete = false;
-mkt_map.on("rendercomplete", function (evt) {
-  if (!attributionComplete) {
-    let attribution = document.getElementsByClassName("ol-attribution")[0];
-    let attributionList = attribution.getElementsByTagName("ul")[0];
-    let firstLayerAttribution = attributionList.getElementsByTagName("li")[0];
-    let olAttribution = document.createElement("li");
-    olAttribution.innerHTML =
-      '<a href="https://openlayers.org/" class="font-barlow-light">OpenLayers Docs</a> &#x2503; ';
-    attributionList.insertBefore(olAttribution, firstLayerAttribution);
-    attributionComplete = true;
-  }
-});

@@ -8,6 +8,7 @@ const dir_name = 'mkt_analysis_django'
 module.exports = {
   entry: {
     mkt_analysis_map: "./src/js/mkt_analysis_map.js",
+    ward_detail_map: "./src/js/ward_detail_map.js",
     bootstrap: "./src/js/bootstrap.js",
     market_segmentation: "./src/js/market_segmentation.js",
   },

@@ -16,6 +16,11 @@ from data.forms import (
 )
 
 
+from .forms import (
+    NumberOfRecordForm
+)
+
+
 from pathlib import Path, PurePath
 import pandas
 # import numpy
@@ -48,9 +53,10 @@ def home_page_view(request):
                     'SubCounty':str(ward.sub_county),
                     'County':str(ward.county),
                     'Number_Clients':len(custs_list),
+                    'WardUrl':ward.ward_url,
                 }
                 ward_customer_list.append(ward_customer_data)
-                
+            
 
         sales_df = pandas.DataFrame(Sale.objects.values())
         customers_df = pandas.DataFrame(Customer.objects.values('id', 'customer_name')).rename(
@@ -136,19 +142,22 @@ def theExcelDataFrame(nrows):
 def uploadExcel_view(request):
     template_name = 'pages/upload_file.html'
     excel_form = ExcellModelForm(request.POST or None, request.FILES or None)
+    num_records_form = NumberOfRecordForm(request.GET or None)
 
     context = {
         'page_name': 'Upload File',
         'excel_form' : excel_form,
+        'num_records_form' : num_records_form,
     }
 
     dropped_excel_DF = None
     excel_results = None
 
-    if request.method == 'POST' and excel_form.is_valid():
+    if request.method == 'POST' and excel_form.is_valid() and num_records_form.is_valid() and 'n_rows' in request.GET:
         excel_form.save()
 
-        excel_results = theExcelDataFrame(100)
+        n_rows = num_records_form['n_rows']
+        excel_results = theExcelDataFrame(n_rows)
 
         excel_DF = excel_results['excel_df']
 
@@ -189,6 +198,7 @@ def uploadExcel_view(request):
         context = {
             'page_name': 'Upload File',
             'excel_form' : excel_form,
+            'num_records_form' : num_records_form,
             'excel_name' : excel_results['file_name'],
             'dropped_excel_DF': dropped_excel_DF,
         }
@@ -199,6 +209,9 @@ def uploadExcel_view(request):
 
 def ward_detail_view(request, ward_url):
     template_name = 'pages/ward_detail.html'
+
+    # ward_geojson
+    # ward_customers_geojson
     
     ward = get_object_or_404(Ward, ward_url=ward_url)
     customers = Customer.objects.filter(geom__intersects=ward.geom)
@@ -215,6 +228,18 @@ def ward_detail_view(request, ward_url):
         total_sales += sale.total_sales
     num_customers = customers.count()
 
+    ward_geojson = serialize(
+        'geojson',
+        Ward.objects.filter(ward_url=ward_url),
+        fields = ('ward', 'geom')
+    )
+
+    ward_customers_geojson = serialize(
+        'geojson',
+        customers,
+        fields = ('customer_name', 'geom')
+    )
+
     context = {
         'page_name': 'Ward Detail',
         'ward' : ward,
@@ -223,6 +248,8 @@ def ward_detail_view(request, ward_url):
         'total_prod_b_sales' : total_prod_b_sales,
         'total_prod_c_sales' : total_prod_c_sales,
         'total_sales' : total_sales,
+        'ward_geojson' : ward_geojson,
+        'ward_customers_geojson' : ward_customers_geojson,
     }
         
     return render(request, template_name, context)
