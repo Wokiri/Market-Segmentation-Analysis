@@ -1,0 +1,36 @@
+{% extends 'pages/base_template.html' %} {% load static %} {% load humanize %}
+{% block content %}
+
+{% if ward %}
+<div class="table-responsive p-3" style="max-height: 50vh;">
+    <p class="text-center">{{ ward.ward }} Ward</p>
+    <table class="table table-dark table-striped table-sm table-bordered font-barlow-light align-middle">
+        <thead>
+            <tr style="text-align: center;">
+              <th>Ward</th>
+              <th>SubCounty</th>
+              <th>County</th>
+              <th>Number of Clients</th>
+              <th>Total Product A Sales</th>
+              <th>Total Product B Sales</th>
+              <th>Total Product C Sales</th>
+              <th>Total Sales</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+              <th>{{ ward.ward }}</th>
+              <td>{{ ward.sub_county }}</td>
+              <td>{{ ward.county }}</td>
+              <td class="text-center fs-4">{{ num_customers|apnumber|capfirst }}</td>
+              <td class="text-center fs-4">{{ total_prod_a_sales|apnumber|capfirst }}</td>
+              <td class="text-center fs-4">{{ total_prod_b_sales|apnumber|capfirst }}</td>
+              <td class="text-center fs-4">{{ total_prod_c_sales|apnumber|capfirst }}</td>
+              <td class="text-center fs-4">{{ total_sales|apnumber|capfirst }}</td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+{% endif %}
+
+{% endblock %}

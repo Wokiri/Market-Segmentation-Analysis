@@ -4,17 +4,39 @@
 
 {% block content %}
 
-{% if sales_df is not None and customers_df is not None and wards_df is not None %}
+{% if sales_df is not None and customers_df is not None %}
 
 <div class="table-responsive p-3">
-    <p class="text-info text-center">Dataframe Head of Sales Records Per Customer</p>
+    <p class="text-center">Dataframe Head of Sales Records Per Customer</p>
     {{ sales_df_head|safe }}
 </div>
 
-<div class="table-responsive p-3">
-    <p class="text-info text-center">Wards</p>
-    {{ wards_df|safe }}
+
+{% if ward_customer_list %}
+<div class="table-responsive p-3" style="max-height: 50vh;">
+    <p class="text-center">Table of Wards sorted by Number of Customers</p>
+    <table class="table table-dark table-striped table-sm table-bordered font-barlow-light align-middle">
+        <thead>
+            <tr style="text-align: center;">
+              <th>Ward</th>
+              <th>SubCounty</th>
+              <th>County</th>
+              <th>Number of Clients</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for ward in ward_customer_list|dictsortreversed:'Number_Clients' %}
+            <tr>
+              <th>{{ ward.Ward }}</th>
+              <td>{{ ward.SubCounty }}</td>
+              <td>{{ ward.County }}</td>
+              <td class="text-center fs-4">{{ ward.Number_Clients }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
 </div>
+{% endif %}
 
 
 {% else %}

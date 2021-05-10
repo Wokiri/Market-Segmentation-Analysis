@@ -47,4 +47,11 @@ class Ward(models.Model):
     ward = models.CharField(max_length=25)
     geom = models.MultiPolygonField(srid=4326)
 
+    ward_url = models.CharField(max_length=100)
+
     def __str__(self): return self.ward
+
+    def save(self, *args, **kwargs):
+        self.ward_url = str(self.ward).lower().replace(" ","_").replace("'","").replace('/', '-')
+        super().save(*args, **kwargs)
+        

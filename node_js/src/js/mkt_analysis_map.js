@@ -12,9 +12,23 @@ import {
   defaults as defaultControls,
   ZoomSlider,
 } from 'ol/control'
+import TileLayer from "ol/layer/Tile";
+import XYZ from "ol/source/XYZ";
 
 // const customers_geojson = require('./customers.json')
 // const market_wards_geojson = require('./market_wards.json')
+
+const OpenStreetMapLayer = new TileLayer({
+  title: "OpenStreetMap",
+  type: "base",
+  opacity: OpenStreetMap_Opacity,
+
+  source: new XYZ({
+    attributions: "Open Street map ",
+    url: "https://tile.openstreetmap.org/{z}/{x}/{y}.png",
+  }),
+});
+
 
 const mkt_div = document.getElementById('mkt_map')
 const mkt_popup = document.getElementById('mkt_popup')
@@ -91,7 +105,7 @@ const WardTextStyle = feature =>
 const WardPolygonStyle = feature => {
   return new Style({
     fill: new Fill({
-      color: '#331100',
+      color: 'rgba(51, 17, 0, 0.85)',
     }),
     stroke: new Stroke({
       color: '#99ccff',
@@ -131,7 +145,7 @@ const mkt_map = new Map({
     new ZoomSlider(),
   ]),
   target: mkt_div,
-  layers: [WardLayer, CustomerLayer],
+  layers: [OpenStreetMapLayer, WardLayer, CustomerLayer],
   overlays: [theOverlay],
   view: new View({
     maxZoom: 28,
@@ -154,11 +168,13 @@ window.addEventListener('resize', checkSize)
 
 // If Ward is selected get feature info, don't otherwise
 const populate_PopupContent = theFeature => {
+  let ward_name = String(theFeature.ward).replace(/ /g, '_').replace(/'/g, '').replace(/\//g, '-').toLowerCase()
   mkt_PopupContent.style.padding = '5px'
   mkt_PopupContent.innerHTML = `
+      <p class='font-barlow-light fs-6 m-0'>SubCounty: <span class='font-barlow-semibold'>${theFeature.county}</span></p>
       <p class='font-barlow-light fs-6 m-0'>SubCounty: <span class='font-barlow-semibold'>${theFeature.sub_county}</span></p>
-      <p class='font-barlow-light fs-6 m-0'>Ward: <span class='font-barlow-semibold'>${theFeature.ward}</span></p>
-      <a class="btn btn-outline-info mt-2" href='/mkt-detail/${theFeature.pk}'>Market Details</a>
+      <p class='font-barlow-light fs-5 m-0'>Ward: <span class='font-barlow-semibold'>${theFeature.ward}</span></p>
+      <a class="btn btn-outline-info mt-2" href='/mkt-detail/${ward_name}'>Market Details</a>
       `
 }
 
@@ -178,7 +194,7 @@ mkt_map.on('singleclick', evt => {
   if (selected) {
     let click_coords = evt.coordinate
     theOverlay.setPosition(click_coords)
-    console.log(selected.getProperties())
+    // console.log(selected.getProperties())
     populate_PopupContent(selected.getProperties())
     selected = null
   } else {
@@ -186,3 +202,17 @@ mkt_map.on('singleclick', evt => {
     mkt_popupcloser.blur()
   }
 })
+
+let attributionComplete = false;
+mkt_map.on("rendercomplete", function (evt) {
+  if (!attributionComplete) {
+    let attribution = document.getElementsByClassName("ol-attribution")[0];
+    let attributionList = attribution.getElementsByTagName("ul")[0];
+    let firstLayerAttribution = attributionList.getElementsByTagName("li")[0];
+    let olAttribution = document.createElement("li");
+    olAttribution.innerHTML =
+      '<a href="https://openlayers.org/" class="font-barlow-light">OpenLayers Docs</a> &#x2503; ';
+    attributionList.insertBefore(olAttribution, firstLayerAttribution);
+    attributionComplete = true;
+  }
+});
