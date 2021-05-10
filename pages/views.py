@@ -17,14 +17,120 @@ from data.forms import (
 
 
 from .forms import (
-    NumberOfRecordForm
+    NumberOfRecordForm,
+    SearchWardForm,
 )
 
 
 from pathlib import Path, PurePath
+from math import pi
 import pandas
-# import numpy
-# import csv, io, json
+
+from bokeh.plotting import figure
+from bokeh.embed import components
+from bokeh.models import ColumnDataSource
+from bokeh.transform import cumsum
+from bokeh.palettes import Category20_20, Spectral4
+
+def pie_chart(source=None,
+    title='Pie Chart',
+    tool_tips=None,
+    radius=0.8,
+    line_color='#000000',
+    legend_field='',
+    legend_orient='horizontal',
+    legend_loc='top_center'
+    ):
+    plot = figure(
+        title=title,
+        tooltips=tool_tips,
+    )
+    plot.wedge(
+        x=0,
+        y=1,
+        radius=radius,
+        start_angle=cumsum('value', include_zero=True),
+        end_angle=cumsum('value'),
+        line_color=line_color,
+        fill_color='color',
+        source=source,
+        legend_field=legend_field,
+    )
+
+    plot.axis.visible=False
+    plot.axis.axis_line_color=None
+    plot.toolbar.active_drag = None
+    plot.title.align = "center"
+    plot.title.text_color = "DarkSlateBlue"
+    plot.title.text_font_size = "18px"
+    plot.legend.orientation = legend_orient
+    plot.legend.location = legend_loc
+
+    script, div = components(plot)
+
+    return {
+        'script':script,
+        'div':div,
+    }
+
+
+def draw_bar_charts(
+    x_name,
+    x_label,
+    y_name,
+    y_label,
+    source=None,
+    title='Bar Graph',
+    tool_tips=None,
+    legend_field='',
+    x_range=[],
+    fill_color='color',
+    legend_orientation="horizontal",
+    legend_location = "top_left"
+):
+    
+    b_graph=figure(
+        title=title,
+        x_axis_label=x_label,
+        y_axis_label=y_label,
+        tooltips = tool_tips,
+        x_range=x_range,
+        # y_range=(0,9),
+        plot_width=1120,
+        )
+        
+    
+    b_graph.vbar(
+        x=x_name,
+        top=y_name,
+        source=source,
+        width=0.8,
+        legend_field=legend_field,
+        fill_color=fill_color,
+        line_color ='#331100',
+        )
+
+    b_graph.toolbar.active_drag = None
+    b_graph.title.align = "center"
+    b_graph.title.text_color = "darkgreen"
+    b_graph.title.text_font_size = "18px"
+    b_graph.xaxis.major_label_text_color = 'darkgreen'
+    b_graph.yaxis.major_label_text_color = 'darkgreen'
+    b_graph.xgrid.grid_line_color = None
+    b_graph.y_range.start=0
+    b_graph.legend.orientation=legend_orientation
+    b_graph.legend.location = legend_location
+
+
+    b_graph_script, b_graph_div = components(b_graph)
+
+    return {
+        'b_graph_script': b_graph_script,
+        'b_graph_div': b_graph_div,
+    }
+
+
+
 
 
 
@@ -32,15 +138,19 @@ import pandas
 def home_page_view(request):
     template_name = 'pages/home_page.html'
 
+
     sales_df = None
     customers_df = None
     ward_customer_list = None
+    wards = None
     sales_df_head = None
+    
 
 
     if Sale.objects.count() > 0 and Customer.objects.count() > 0 and Ward.objects.count() > 0:
 
         ward_customer_list = []
+        wards = []
 
         for ward in Ward.objects.all():
             customers = Customer.objects.filter(geom__intersects=ward.geom)#.values_list('customer_name')
@@ -48,6 +158,7 @@ def home_page_view(request):
                 custs_list = []
                 for i, obj in enumerate(list(customers)):
                     custs_list.append(obj.customer_name)
+                wards.append(ward)
                 ward_customer_data = {
                     'Ward':str(ward.ward),
                     'SubCounty':str(ward.sub_county),
@@ -64,6 +175,36 @@ def home_page_view(request):
                 'id':'Customer Id',
                 'customer_name':'Customer Name',
             }
+        )
+
+        county_df = pandas.DataFrame(data=ward_customer_list, columns=['County', 'Number_Clients']).groupby(['County']).sum()
+        county_df.loc[:,'color'] = Category20_20[:len(county_df)]
+        county_df.loc[:,'value'] = county_df['Number_Clients']/county_df['Number_Clients'].sum() * 2*pi
+
+        county_geog = pie_chart(
+            source=ColumnDataSource(county_df),
+            legend_field='County',
+            title='Market Composition by County',
+            tool_tips=[
+                ('County', '@County'),
+                ('No. Customers', '@Number_Clients'),
+            ]
+        )
+
+        sub_county_df = pandas.DataFrame(data=ward_customer_list, columns=['SubCounty', 'Number_Clients']).groupby(['SubCounty']).sum()
+        sub_county_df.loc[:,'color'] = Category20_20[:len(sub_county_df)]
+        sub_county_df.loc[:,'value'] = sub_county_df['Number_Clients']/sub_county_df['Number_Clients'].sum() * 2*pi
+
+        sub_county_geog = pie_chart(
+            source=ColumnDataSource(sub_county_df),
+            legend_field='SubCounty',
+            title='Market Composition by SubCounty',
+            tool_tips=[
+                ('SubCounty', '@SubCounty'),
+                ('No. Customers', '@Number_Clients'),
+            ],
+            legend_orient='vertical',
+            legend_loc='right',
         )
 
         sales_df_head = sales_df.rename(
@@ -88,6 +229,11 @@ def home_page_view(request):
         'customers_df': customers_df,
         'sales_df_head': sales_df_head,
         'ward_customer_list': ward_customer_list,
+        'county_script': county_geog['script'],
+        'county_div': county_geog['div'],
+        'sub_county_script': sub_county_geog['script'],
+        'sub_county_div': sub_county_geog['div'],
+        'num_wards': len(wards),
     }
 
     return render(request, template_name, context)
@@ -209,17 +355,20 @@ def uploadExcel_view(request):
 
 def ward_detail_view(request, ward_url):
     template_name = 'pages/ward_detail.html'
+    search_ward_form = SearchWardForm(request.POST or None)
 
-    # ward_geojson
-    # ward_customers_geojson
-    
     ward = get_object_or_404(Ward, ward_url=ward_url)
+
+    if search_ward_form.is_valid() and 'ward_name' in request.POST:
+        ward = get_object_or_404(Ward, ward__icontains=search_ward_form.cleaned_data['ward_name'])
+    
     customers = Customer.objects.filter(geom__intersects=ward.geom)
     total_prod_a_sales = 0
     total_prod_b_sales = 0
     total_prod_c_sales = 0
     total_sales = 0
 
+    
     for customer in customers:
         sale = Sale.objects.get(customer=customer)
         total_prod_a_sales += sale.product_a
@@ -230,7 +379,7 @@ def ward_detail_view(request, ward_url):
 
     ward_geojson = serialize(
         'geojson',
-        Ward.objects.filter(ward_url=ward_url),
+        Ward.objects.filter(ward_url=ward.ward_url),
         fields = ('ward', 'geom')
     )
 
@@ -240,9 +389,37 @@ def ward_detail_view(request, ward_url):
         fields = ('customer_name', 'geom')
     )
 
+    data = {
+        'total_prod_a_sales':[total_prod_a_sales],
+        'total_prod_b_sales':[total_prod_b_sales],
+        'total_prod_c_sales':[total_prod_c_sales],
+        'total_sales':[total_sales],
+    }
+
+    columns=['Total Product A Sales', 'Total Product B Sales', 'Total Product C Sales', 'Cumulative Sales',]
+    values=[total_prod_a_sales, total_prod_b_sales, total_prod_c_sales, total_sales]
+
+    source = ColumnDataSource(data=dict(columns=columns, values=values, color=Spectral4))
+
+    ward_bar_graph = draw_bar_charts(
+        'columns',
+        'Products',
+        'values',
+        'Sales Quantity',
+        source=source,
+        legend_field='columns',
+        title='Sales Bar Chart',
+        x_range=columns,
+        tool_tips=[
+                ('Sales', '@values'),
+            ]
+        )
+
+
     context = {
         'page_name': 'Ward Detail',
         'ward' : ward,
+        'search_ward_form':search_ward_form,
         'num_customers' : num_customers,
         'total_prod_a_sales' : total_prod_a_sales,
         'total_prod_b_sales' : total_prod_b_sales,
@@ -250,6 +427,8 @@ def ward_detail_view(request, ward_url):
         'total_sales' : total_sales,
         'ward_geojson' : ward_geojson,
         'ward_customers_geojson' : ward_customers_geojson,
+        'bar_graph_script' : ward_bar_graph['b_graph_script'],
+        'bar_graph_div' : ward_bar_graph['b_graph_div'],
     }
         
     return render(request, template_name, context)

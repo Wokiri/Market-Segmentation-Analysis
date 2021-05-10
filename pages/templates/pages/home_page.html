@@ -2,20 +2,25 @@
 {% load static %}
 {% load humanize %}
 
+{% block docmeta %}
+{{ county_script|safe }}
+{{ sub_county_script|safe }}
+{% endblock %}
+
 {% block content %}
 
 {% if sales_df is not None and customers_df is not None %}
 
-
 {% if ward_customer_list %}
-<div class="table-responsive p-3" style="max-height: 90vh;">
-    <p class="text-center fs-4">Wards with at least a Customer</p>
+<div class="table-responsive p-3 border border-white mx-auto" style="max-height: 65vh; width:94vw;">
+    <p class="text-center fs-4">{{ num_wards|apnumber|capfirst }} Ward{{ num_wards|pluralize }} with at least a Customer</p>
     <p class="text-center fs-6">List is sorted by the Number of Customers</p>
     <table class="table table-dark table-striped table-sm table-bordered font-barlow-light align-middle">
         <thead>
             <tr style="text-align: center;">
-              <th>SubCounty</th>
+              <th></th>
               <th>County</th>
+              <th>Sub County</th>
               <th>Ward</th>
               <th>Number of Clients</th>
             </tr>
@@ -23,8 +28,9 @@
         <tbody>
             {% for ward in ward_customer_list|dictsortreversed:'Number_Clients' %}
             <tr>
-              <td>{{ ward.SubCounty }}</td>
+              <td>{{ forloop.counter }}</td>
               <td>{{ ward.County }}</td>
+              <td>{{ ward.SubCounty }}</td>
               <th class="pl-5 fs-5"><a class="nav-link" href="{% url 'pages:ward_detail_page' ward.WardUrl %}">{{ ward.Ward }}</a></th>
               <td class="text-center fs-4">{{ ward.Number_Clients }}</td>
             </tr>
@@ -32,6 +38,21 @@
         </tbody>
     </table>
 </div>
+
+<div class="container-fluid d-flex justify-content-center mt-5">
+    <div class="row my-5">
+        <div class="mx-auto mb-5" style="overflow: auto;">
+            {{ county_div|safe }}
+        </div>
+    </div>
+    <div class="row my-5">
+        <div class="mx-auto mb-5" style="overflow: auto;">
+            {{ sub_county_div|safe }}
+        </div>
+    </div>
+</div>
+
+
 {% endif %}
 
 
@@ -42,5 +63,7 @@
 </div>
 
 {% endif %}
+
+<script src="{% static 'pages/js/bokeh.min.js' %}"></script>
 
 {% endblock %}

@@ -2,12 +2,13 @@
 
 {% block docmeta %}
 <link rel="stylesheet" type="text/css" href="{% static 'pages/css/ward_detail_map.css' %}">
+{{ bar_graph_script|safe }}
 {% endblock %}
 {% block content %}
 
 {% if ward %}
-<div class="table-responsive p-3" style="max-height: 50vh;">
-    <p class="text-center">{{ ward.ward }} Ward</p>
+<div class="table-responsive p-3 border border-white mx-auto" style="max-height:50vh;width:98%;">
+    <p class="text-center fs-4">{{ ward.ward }} Ward</p>
     <table class="table table-dark table-striped table-sm table-bordered font-barlow-light align-middle">
         <thead>
             <tr style="text-align: center;">
@@ -42,7 +43,21 @@
   </div>
 </div>
 
+<div class="container-fluid d-flex justify-content-center my-5">
+  <div class="row my-5">
+      <div class="mx-auto mb-5" style="overflow: auto;">
+          {{ bar_graph_div|safe }}
+      </div>
+  </div>
+</div>
 
+<div class="p-4">
+  <form class="d-flex" method="post">
+      {% csrf_token %}
+      {{ search_ward_form }}
+      <button class="btn btn-light my-2 my-sm-0" type="submit">Search</button>
+  </form>
+</div>
 
 
 
@@ -52,6 +67,7 @@
   const OpenStreetMap_Opacity = 0.85
 </script>
 <script src="{% static 'pages/js/ward_detail_map.js' %}"></script>
+<script src="{% static 'pages/js/bokeh.min.js' %}"></script>
 {% endif %}
 
 {% endblock %}
