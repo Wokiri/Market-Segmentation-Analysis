@@ -88,6 +88,8 @@ Example of snapshots include:
 
 #### Writting a portion of the Excel Data into the DataBase
 
+Uploading the excel sheet into the databaase gives room for specifying the number of objects to actually write into the database. The example below shows a choice of 2500 Sales/Customer records written in the database. This value of course is flexible.
+
 <p align='center'><img src="https://dub01pap001files.storage.live.com/y4mXhGdJnrfZj9_ngVsFMqXeiHhbSUZ3kNZt4G6S5aLK5SFTfpyGZPL60s5kWcyvJm8ta3KhZNhIzj4oTLTtygGTEKuTuAoisaqQoCTmwGdYv94hWq8Ua1jXdvqAOUlC95h_ZV59s2BB4G_wK4tfZtCUIDHDm0l_ar38jVwwnMwpYIgZX7A3kXebjs4h4IFzQJC?width=1280&height=720&cropmode=none" width="1280" alt="uploaded data, with partial database storage" /></p>
 
 <br/>
@@ -95,7 +97,7 @@ Example of snapshots include:
 
 </br>
 
-#### Homepage when Spatial and Sales data is uploaded
+#### Homepage with a tabular summary when Spatial and Sales data are uploaded
 
 <p align='center'><img src="https://dub01pap001files.storage.live.com/y4mCBm2Y-8Hg9dIEn_meHwKGxQnHscLfAh-R3QsvVu-NmYFmScMJ1AHKGFKpsxTYp-M3an-ez0EEKALEDLXJSqP1iL-mzKZVxr-OXXjQkN_YsR0XIvTgK-g_Rne4t4cIPchD72iRoLawdm1KIdP6YxYWyX2x9mtEVoQG49lUhecwnsgVVIBPPPh5xXFch3Dg0xT?width=1280&height=800&cropmode=none" width="1280" alt="Homepage when Spatial and Sales data is uploaded" /></p>
 
@@ -105,15 +107,17 @@ Every ward name in the table above is a link that navigates to the map view of t
 
 </br>
 
-#### Market Composition by Number of Clients
+#### Pie Charts showing the Market Size per County and SubCounty.
 
-<p align='center'><img src="https://dub01pap001files.storage.live.com/y4mqewTSF1yl-ehx-0Jx278cDR6ZuZwYpsSG6n_bLedP3SfDT9MFNP8-N9PE2DEpcm80T84aybbU8Cnvd6RnEb17APMPK21-Aa2wIZEhbfWtSVAFRx4x4hu6UbDNyWdLbzonk6b_jfzAYGeH3kB0_XFnnCgeMN5PBvwd9CoQ3UnbyJMVqcQtfCsptI9S7v5JA4i?width=1282&height=802&cropmode=none" width="1282" alt="Market_Composition_by_Number_of_Clients" /></p>
+This can also be shown on a ward basis.
+
+<p align='center'><img src="https://dub01pap001files.storage.live.com/y4mqewTSF1yl-ehx-0Jx278cDR6ZuZwYpsSG6n_bLedP3SfDT9MFNP8-N9PE2DEpcm80T84aybbU8Cnvd6RnEb17APMPK21-Aa2wIZEhbfWtSVAFRx4x4hu6UbDNyWdLbzonk6b_jfzAYGeH3kB0_XFnnCgeMN5PBvwd9CoQ3UnbyJMVqcQtfCsptI9S7v5JA4i?width=1282&height=802&cropmode=none" width="1282" alt="Market_Size_by_Number_of_Clients" /></p>
 
 <br/>
 
 </br>
 
-#### Ward Map view and table summary about products consumption
+#### Map of a ward and tabular summary about quantities of products consumption
 
 <p align='center'><img src="https://dub01pap001files.storage.live.com/y4mNr4pbaFvTJI2SHFa6y_nYO7hTyf6y87gdmP1LdrWrWb7RXgy9jdnFkSsWS4ozO5ERWPdzNlbE3Au_qXuxeQR9D53g1-8SidklfTE9fMMU8wAVyTIZ1Mj14iPbYOXi-I3dFZs1lmBvJV5FDIY9NktgyVnmZBnl_5uOQwcGdaw4_smNRBuyALN4gk3d_aGvOkw?width=1280&height=800&cropmode=none" width="1280" alt="Ward_Map_Details" /></p>
 
@@ -121,7 +125,7 @@ Every ward name in the table above is a link that navigates to the map view of t
 
 </br>
 
-#### Vertical Bar graph showing sales per product in a given county
+#### Vertical Bar graph showing sales per product in a given ward
 
 <p align='center'><img src="https://dub01pap001files.storage.live.com/y4m6GMMSJo1U7aq2G9Z3ggU6jgr-iKY-7o-QNx9g6I9a3leLhnmYCQdKZNNj_r9YIQjMZ1AnCYXMH70OfTJNLZDGeV0EGjPk8WCt877hvjr5w6WdQLH2jkY6kFLcDABWkuXSpkKiFCFLowS8oyolBGS58g3qhtus8etuYKRTIv4AF0BZ0fHsPXJRkUqEqNTdtZa?width=1120&height=600&cropmode=none" width="1120" alt="Vertical_bar_graph_about_sales" /></p>
 
@@ -272,9 +276,3 @@ http://127.0.0.1:8000/
 
 1. The large dataset requires that database methods be optimized otherwise, depending on the computer, there are potential situations of memory lapses.
 2. There is a GDAL error warning when i used the latest version of gdal which could be a cause of some delays.
-
-
-
-## Reach Out...
-
-<p align='center'><a href="https://twitter.com/JWokiri"><img height="30" src="https://www.flaticon.com/svg/static/icons/svg/145/145812.svg"></a>
