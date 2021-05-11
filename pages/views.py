@@ -403,7 +403,7 @@ def ward_detail_view(request, ward_url):
         'Sales Quantity',
         source=source,
         legend_field='columns',
-        title='Sales Bar Chart',
+        title=f'Sales Bar Chart for {ward.ward} Ward',
         x_range=columns,
         tool_tips=[
                 ('Sales', '@values'),
