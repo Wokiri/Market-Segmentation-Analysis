@@ -155,6 +155,12 @@ Bokeh intergrates well with django which further enhances applicabity.
 
 Displaying these data in the various formarts as shown in the pictures gives a way of clearly understanding the various aspects of market segmentation.
 
+Geographic composition of this market was deeply analyzed from county, subcounty to ward levels.
+
+The number of clients per ward has been shown.
+
+The quantity of consumption of every product has been shown on a ward per ward basis.
+
 - It can be seen, for example, that the most consumed product across wards is Product B.
 - We can also see that those wards eastwards the CBD especially give the largest market.
 - We also noticed that a in many of the wards there was a linear population along major roads.
